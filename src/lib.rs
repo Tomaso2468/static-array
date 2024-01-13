@@ -1,5 +1,25 @@
 //! A crate providing statically sized, heap allocated arrays without requiring a copy from the
 //! stack for array creation.
+//!
+//! # Examples
+//! ## Creating a large array on the heap using a function.
+//! ```
+//! use staticarray::HeapArray;
+//!
+//! // Creates an array 16 MB (on 64 bit systems) in size which is larger than the standard linux stack size.
+//! let array: HeapArray<usize, 2000000> = HeapArray::from_fn(|i| i);
+//!
+//! assert_eq!(1247562, array[1247562]);
+//! ```
+//!
+//! ## Creating a large array from the default value of a type.
+//! ```
+//! use staticarray::HeapArray;
+//!
+//! let array: HeapArray<usize, 2000000> = HeapArray::default();
+//!
+//! assert_eq!(0, array[1247562]);
+//! ```
 
 use std::{ptr::{NonNull, self}, alloc::{Layout, alloc, handle_alloc_error}, mem::MaybeUninit, ops::{Index, IndexMut, Deref}, borrow::{Borrow, BorrowMut}};
 
@@ -8,6 +28,26 @@ use std::{ptr::{NonNull, self}, alloc::{Layout, alloc, handle_alloc_error}, mem:
 ///
 /// - `T` - The type of data stored in the array.
 /// - `N` - The length of the array.
+///
+/// # Examples
+/// ## Creating a large one dimensional array on the heap using a function.
+/// ```
+/// use staticarray::HeapArray;
+///
+/// // Creates an array 16 MB (on 64 bit systems) in size which is larger than the standard linux stack size.
+/// let array: HeapArray<usize, 2000000> = HeapArray::from_fn(|i| i);
+///
+/// assert_eq!(1247562, array[1247562]);
+/// ```
+///
+/// ## Creating a large array from the default value of a type.
+/// ```
+/// use staticarray::HeapArray;
+///
+/// let array: HeapArray<usize, 2000000> = HeapArray::default();
+///
+/// assert_eq!(0, array[1247562]);
+/// ```
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct HeapArray<T, const N: usize> {
     /// The data stored inside the array.
@@ -216,6 +256,25 @@ impl <T, const N: usize> From<Box<[T; N]>> for HeapArray<T, N> {
 /// - `T` - The type of data stored in the array.
 /// - `M` - The length of the inner array.
 /// - `N` - The length of the array.
+///
+/// # Examples
+/// ## Creating a large two dimensional array on the heap using a function.
+/// ```
+/// use staticarray::HeapArray2D;
+///
+/// let array: HeapArray2D<usize, 1000, 1000> = HeapArray2D::from_fn(|i, j| i * j);
+///
+/// assert_eq!(10000, array[(100, 100)]);
+/// ```
+///
+/// ## Creating a large two dimensional array from the default value of a type.
+/// ```
+/// use staticarray::HeapArray2D;
+///
+/// let array: HeapArray2D<usize, 1000, 1000> = HeapArray2D::default();
+///
+/// assert_eq!(0, array[(100, 100)]);
+/// ```
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct HeapArray2D<T, const M: usize, const N: usize> {
     /// The data stored inside the array.
@@ -434,6 +493,25 @@ impl <T, const M: usize, const N: usize> From<Box<[[T; M]; N]>> for HeapArray2D<
 /// - `L` - The length of the innermost array.
 /// - `M` - The length of the inner array.
 /// - `N` - The length of the array.
+///
+/// # Examples
+/// ## Creating a large three dimensional array on the heap using a function.
+/// ```
+/// use staticarray::HeapArray3D;
+///
+/// let array: HeapArray3D<usize, 200, 200, 200> = HeapArray3D::from_fn(|i, j, k| i * j + k);
+///
+/// assert_eq!(10100, array[(100, 100, 100)]);
+/// ```
+///
+/// ## Creating a large three dimensional array from the default value of a type.
+/// ```
+/// use staticarray::HeapArray3D;
+///
+/// let array: HeapArray3D<usize, 200, 200, 200> = HeapArray3D::default();
+///
+/// assert_eq!(0, array[(100, 100, 100)]);
+/// ```
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct HeapArray3D<T, const L: usize, const M: usize, const N: usize> {
     /// The data stored inside the array.
