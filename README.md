@@ -12,7 +12,8 @@ The following types are provided:
 ```rust
 use static_array::HeapArray;
 
-// Creates an array 16 MB (on 64 bit systems) in size which is larger than the standard linux stack size.
+// Creates an array 16 MB (on 64 bit systems) in size
+// which is larger than the standard linux stack size.
 let array: HeapArray<usize, 2000000> = HeapArray::from_fn(|i| i);
 
 assert_eq!(1247562, array[1247562]);
