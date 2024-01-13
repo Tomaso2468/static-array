@@ -1,9 +1,25 @@
 [package]
 name = "static-array"
 version = "0.0.0"
+authors = [
+    "Tomas O'Shea <48136416+Tomaso2468@users.noreply.github.com>"
+]
 edition = "2021"
 resolver = "2"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+description = "A rust crate providing a heap-allocated non-resizable type-checked array."
+homepage = "https://github.com/Tomaso2468/static-array"
+repository = "https://github.com/Tomaso2468/static-array"
+keywords = ["array", "static", "heap", "allocation"]
+categories = []
+readme = "README.md"
+include = [
+    "Cargo.toml",
+    "README.md",
+    "LICENSE",
+    "Cargo.lock",
+    "src/**.rs",
+]
+license = "BSD-3-Clause"
 
 [dependencies]
+
