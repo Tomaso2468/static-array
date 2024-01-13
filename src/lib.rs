@@ -4,7 +4,7 @@
 //! # Examples
 //! ## Creating a large array on the heap using a function.
 //! ```
-//! use staticarray::HeapArray;
+//! use static_array::HeapArray;
 //!
 //! // Creates an array 16 MB (on 64 bit systems) in size which is larger than the standard linux stack size.
 //! let array: HeapArray<usize, 2000000> = HeapArray::from_fn(|i| i);
@@ -14,7 +14,7 @@
 //!
 //! ## Creating a large array from the default value of a type.
 //! ```
-//! use staticarray::HeapArray;
+//! use static_array::HeapArray;
 //!
 //! let array: HeapArray<usize, 2000000> = HeapArray::default();
 //!
@@ -32,7 +32,7 @@ use std::{ptr::{NonNull, self}, alloc::{Layout, alloc, handle_alloc_error}, mem:
 /// # Examples
 /// ## Creating a large one dimensional array on the heap using a function.
 /// ```
-/// use staticarray::HeapArray;
+/// use static_array::HeapArray;
 ///
 /// // Creates an array 16 MB (on 64 bit systems) in size which is larger than the standard linux stack size.
 /// let array: HeapArray<usize, 2000000> = HeapArray::from_fn(|i| i);
@@ -42,7 +42,7 @@ use std::{ptr::{NonNull, self}, alloc::{Layout, alloc, handle_alloc_error}, mem:
 ///
 /// ## Creating a large array from the default value of a type.
 /// ```
-/// use staticarray::HeapArray;
+/// use static_array::HeapArray;
 ///
 /// let array: HeapArray<usize, 2000000> = HeapArray::default();
 ///
@@ -260,7 +260,7 @@ impl <T, const N: usize> From<Box<[T; N]>> for HeapArray<T, N> {
 /// # Examples
 /// ## Creating a large two dimensional array on the heap using a function.
 /// ```
-/// use staticarray::HeapArray2D;
+/// use static_array::HeapArray2D;
 ///
 /// let array: HeapArray2D<usize, 1000, 1000> = HeapArray2D::from_fn(|i, j| i * j);
 ///
@@ -269,7 +269,7 @@ impl <T, const N: usize> From<Box<[T; N]>> for HeapArray<T, N> {
 ///
 /// ## Creating a large two dimensional array from the default value of a type.
 /// ```
-/// use staticarray::HeapArray2D;
+/// use static_array::HeapArray2D;
 ///
 /// let array: HeapArray2D<usize, 1000, 1000> = HeapArray2D::default();
 ///
@@ -497,7 +497,7 @@ impl <T, const M: usize, const N: usize> From<Box<[[T; M]; N]>> for HeapArray2D<
 /// # Examples
 /// ## Creating a large three dimensional array on the heap using a function.
 /// ```
-/// use staticarray::HeapArray3D;
+/// use static_array::HeapArray3D;
 ///
 /// let array: HeapArray3D<usize, 200, 200, 200> = HeapArray3D::from_fn(|i, j, k| i * j + k);
 ///
@@ -506,7 +506,7 @@ impl <T, const M: usize, const N: usize> From<Box<[[T; M]; N]>> for HeapArray2D<
 ///
 /// ## Creating a large three dimensional array from the default value of a type.
 /// ```
-/// use staticarray::HeapArray3D;
+/// use static_array::HeapArray3D;
 ///
 /// let array: HeapArray3D<usize, 200, 200, 200> = HeapArray3D::default();
 ///

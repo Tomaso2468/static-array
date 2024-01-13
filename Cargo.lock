@@ -3,5 +3,5 @@
 version = 3
 
 [[package]]
-name = "staticarray"
+name = "static-array"
 version = "0.0.0"
