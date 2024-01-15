@@ -10,7 +10,7 @@ description = "A rust crate providing a heap-allocated non-resizable type-checke
 homepage = "https://github.com/Tomaso2468/static-array"
 repository = "https://github.com/Tomaso2468/static-array"
 keywords = ["array", "static", "heap", "allocation"]
-categories = []
+categories = ["no-std"]
 readme = "README.md"
 include = [
     "Cargo.toml",
