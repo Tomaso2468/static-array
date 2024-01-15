@@ -11,7 +11,7 @@ env:
 
 jobs:
   build:
-    name: "Build"
+    name: "Test"
     runs-on: ubuntu-latest
 
     steps:
@@ -21,17 +21,15 @@ jobs:
     - name: Run tests
       run: cargo test --all-features --verbose
   miri:
-    name: "Miri"
+    name: "Miri Analysis"
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v3
-    - name: Install Miri
+    - name: Setup Miri
       run: |
         rustup toolchain install nightly --component miri
         cargo +nightly miri setup
-    - name: Rebuild
-      run: cargo clean
     - name: Test with Miri
-      run: cargo +nightly miri test --all-targets
+      run: cargo +nightly miri test --all-targets --verbose
 
