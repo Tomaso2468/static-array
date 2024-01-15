@@ -1,6 +1,8 @@
 # Static Array
 A no-std rust crate providing a heap-allocated non-resizable type-checked array.
 
+The documentation is available at <https://docs.rs/static-array/0.2.0>.
+
 The following types are provided:
 - `HeapArray` - A one dimensional heap-allocated array.
 - `HeapArray2D` - A two dimensional heap-allocated array.
