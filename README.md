@@ -1,10 +1,12 @@
 # Static Array
-A rust crate providing a heap-allocated non-resizable type-checked array.
+A no-std rust crate providing a heap-allocated non-resizable type-checked array.
 
 The following types are provided:
 - `HeapArray` - A one dimensional heap-allocated array.
 - `HeapArray2D` - A two dimensional heap-allocated array.
 - `HeapArray3D` - A three dimensional heap-allocated array.
+
+This crate does not depend on `std` but does require `alloc` in order to create the array.
 
 ## Examples
 ### Creating a large array on the heap using a function.
