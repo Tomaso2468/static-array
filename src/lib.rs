@@ -403,20 +403,6 @@ impl <T, const M: usize, const N: usize> IndexMut<usize> for HeapArray2D<T, M, N
     }
 }
 
-impl <T, const M: usize, const N: usize> Index<(usize, usize)> for HeapArray2D<T, M, N> {
-    type Output = T;
-
-    fn index(&self, index: (usize, usize)) -> &Self::Output {
-        self.data.index(index.0).index(index.1)
-    }
-}
-
-impl <T, const M: usize, const N: usize> IndexMut<(usize, usize)> for HeapArray2D<T, M, N> {
-    fn index_mut(&mut self, index: (usize, usize)) -> &mut Self::Output {
-        self.data.index_mut(index.0).index_mut(index.1)
-    }
-}
-
 impl <T, const M: usize, const N: usize> IntoIterator for HeapArray2D<T, M, N> {
     type Item = [T; M];
 
@@ -661,34 +647,6 @@ impl <T, const L: usize, const M: usize, const N: usize> IndexMut<usize> for Hea
     }
 }
 
-impl <T, const L: usize, const M: usize, const N: usize> Index<(usize, usize)> for HeapArray3D<T, L, M, N> {
-    type Output = [T; L];
-
-    fn index(&self, index: (usize, usize)) -> &Self::Output {
-        self.data.index(index.0).index(index.1)
-    }
-}
-
-impl <T, const L: usize, const M: usize, const N: usize> IndexMut<(usize, usize)> for HeapArray3D<T, L, M, N> {
-    fn index_mut(&mut self, index: (usize, usize)) -> &mut Self::Output {
-        self.data.index_mut(index.0).index_mut(index.1)
-    }
-}
-
-impl <T, const L: usize, const M: usize, const N: usize> Index<(usize, usize, usize)> for HeapArray3D<T, L, M, N> {
-    type Output = T;
-
-    fn index(&self, index: (usize, usize, usize)) -> &Self::Output {
-        self.data.index(index.0).index(index.1).index(index.2)
-    }
-}
-
-impl <T, const L: usize, const M: usize, const N: usize> IndexMut<(usize, usize, usize)> for HeapArray3D<T, L, M, N> {
-    fn index_mut(&mut self, index: (usize, usize, usize)) -> &mut Self::Output {
-        self.data.index_mut(index.0).index_mut(index.1).index_mut(index.2)
-    }
-}
-
 impl <T, const L: usize, const M: usize, const N: usize> IntoIterator for HeapArray3D<T, L, M, N> {
     type Item = [[T; L]; M];
 
@@ -800,40 +758,40 @@ mod tests {
     fn test_from_fn_2d() {
         let array: HeapArray2D<usize, 3, 3> = HeapArray2D::from_fn(|i, j| i * 10 + j);
 
-        assert_eq!(0, array[(0, 0)]);
-        assert_eq!(1, array[(0, 1)]);
-        assert_eq!(2, array[(0, 2)]);
-        assert_eq!(10, array[(1, 0)]);
-        assert_eq!(11, array[(1, 1)]);
-        assert_eq!(12, array[(1, 2)]);
-        assert_eq!(20, array[(2, 0)]);
-        assert_eq!(21, array[(2, 1)]);
-        assert_eq!(22, array[(2, 2)]);
+        assert_eq!(0, array[0][0]);
+        assert_eq!(1, array[0][1]);
+        assert_eq!(2, array[0][2]);
+        assert_eq!(10, array[1][0]);
+        assert_eq!(11, array[1][1]);
+        assert_eq!(12, array[1][2]);
+        assert_eq!(20, array[2][0]);
+        assert_eq!(21, array[2][1]);
+        assert_eq!(22, array[2][2]);
     }
 
     #[test]
     fn test_from_fn_3d() {
         let array: HeapArray3D<usize, 2, 3, 3> = HeapArray3D::from_fn(|i, j, k| i * 10 + j + k * 100);
 
-        assert_eq!(0, array[(0, 0, 0)]);
-        assert_eq!(1, array[(0, 1, 0)]);
-        assert_eq!(2, array[(0, 2, 0)]);
-        assert_eq!(10, array[(1, 0, 0)]);
-        assert_eq!(11, array[(1, 1, 0)]);
-        assert_eq!(12, array[(1, 2, 0)]);
-        assert_eq!(20, array[(2, 0, 0)]);
-        assert_eq!(21, array[(2, 1, 0)]);
-        assert_eq!(22, array[(2, 2, 0)]);
+        assert_eq!(0, array[0][0][0]);
+        assert_eq!(1, array[0][1][0]);
+        assert_eq!(2, array[0][2][0]);
+        assert_eq!(10, array[1][0][0]);
+        assert_eq!(11, array[1][1][0]);
+        assert_eq!(12, array[1][2][0]);
+        assert_eq!(20, array[2][0][0]);
+        assert_eq!(21, array[2][1][0]);
+        assert_eq!(22, array[2][2][0]);
         
-        assert_eq!(100, array[(0, 0, 1)]);
-        assert_eq!(101, array[(0, 1, 1)]);
-        assert_eq!(102, array[(0, 2, 1)]);
-        assert_eq!(110, array[(1, 0, 1)]);
-        assert_eq!(111, array[(1, 1, 1)]);
-        assert_eq!(112, array[(1, 2, 1)]);
-        assert_eq!(120, array[(2, 0, 1)]);
-        assert_eq!(121, array[(2, 1, 1)]);
-        assert_eq!(122, array[(2, 2, 1)]);
+        assert_eq!(100, array[0][0][1]);
+        assert_eq!(101, array[0][1][1]);
+        assert_eq!(102, array[0][2][1]);
+        assert_eq!(110, array[1][0][1]);
+        assert_eq!(111, array[1][1][1]);
+        assert_eq!(112, array[1][2][1]);
+        assert_eq!(120, array[2][0][1]);
+        assert_eq!(121, array[2][1][1]);
+        assert_eq!(122, array[2][2][1]);
     }
 
     #[test]
