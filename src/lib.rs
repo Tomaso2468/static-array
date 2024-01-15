@@ -269,7 +269,7 @@ impl <T, const N: usize> From<Box<[T; N]>> for HeapArray<T, N> {
 ///
 /// let array: HeapArray2D<usize, 1000, 1000> = HeapArray2D::from_fn(|i, j| i * j);
 ///
-/// assert_eq!(10000, array[(100, 100)]);
+/// assert_eq!(10000, array[100][100]);
 /// ```
 ///
 /// ## Creating a large two dimensional array from the default value of a type.
@@ -278,7 +278,7 @@ impl <T, const N: usize> From<Box<[T; N]>> for HeapArray<T, N> {
 ///
 /// let array: HeapArray2D<usize, 1000, 1000> = HeapArray2D::default();
 ///
-/// assert_eq!(0, array[(100, 100)]);
+/// assert_eq!(0, array[100][100]);
 /// ```
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct HeapArray2D<T, const M: usize, const N: usize> {
@@ -380,6 +380,20 @@ impl <T, const M: usize, const N: usize> HeapArray2D<MaybeUninit<T>, M, N> {
                 data: Box::from_raw(array.as_ptr())
             }
         }
+    }
+}
+
+impl <T, const M: usize, const N: usize> Index<usize> for HeapArray2D<T, M, N> {
+    type Output = [T; M];
+
+    fn index(&self, index: usize) -> &Self::Output {
+        self.data.index(index)
+    }
+}
+
+impl <T, const M: usize, const N: usize> IndexMut<usize> for HeapArray2D<T, M, N> {
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        self.data.index_mut(index)
     }
 }
 
@@ -506,7 +520,7 @@ impl <T, const M: usize, const N: usize> From<Box<[[T; M]; N]>> for HeapArray2D<
 ///
 /// let array: HeapArray3D<usize, 200, 200, 200> = HeapArray3D::from_fn(|i, j, k| i * j + k);
 ///
-/// assert_eq!(10100, array[(100, 100, 100)]);
+/// assert_eq!(10100, array[100][100][100]);
 /// ```
 ///
 /// ## Creating a large three dimensional array from the default value of a type.
@@ -515,7 +529,7 @@ impl <T, const M: usize, const N: usize> From<Box<[[T; M]; N]>> for HeapArray2D<
 ///
 /// let array: HeapArray3D<usize, 200, 200, 200> = HeapArray3D::default();
 ///
-/// assert_eq!(0, array[(100, 100, 100)]);
+/// assert_eq!(0, array[100][100][100]);
 /// ```
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct HeapArray3D<T, const L: usize, const M: usize, const N: usize> {
@@ -624,6 +638,34 @@ impl <T, const L: usize, const M: usize, const N: usize> HeapArray3D<MaybeUninit
                 data: Box::from_raw(array.as_ptr())
             }
         }
+    }
+}
+
+impl <T, const L: usize, const M: usize, const N: usize> Index<usize> for HeapArray3D<T, L, M, N> {
+    type Output = [[T; L]; M];
+
+    fn index(&self, index: usize) -> &Self::Output {
+        self.data.index(index)
+    }
+}
+
+impl <T, const L: usize, const M: usize, const N: usize> IndexMut<usize> for HeapArray3D<T, L, M, N> {
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        self.data.index_mut(index)
+    }
+}
+
+impl <T, const L: usize, const M: usize, const N: usize> Index<(usize, usize)> for HeapArray3D<T, L, M, N> {
+    type Output = [T; L];
+
+    fn index(&self, index: (usize, usize)) -> &Self::Output {
+        self.data.index(index.0).index(index.1)
+    }
+}
+
+impl <T, const L: usize, const M: usize, const N: usize> IndexMut<(usize, usize)> for HeapArray3D<T, L, M, N> {
+    fn index_mut(&mut self, index: (usize, usize)) -> &mut Self::Output {
+        self.data.index_mut(index.0).index_mut(index.1)
     }
 }
 
