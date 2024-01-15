@@ -835,5 +835,98 @@ mod tests {
         assert_eq!(121, array[(2, 1, 1)]);
         assert_eq!(122, array[(2, 2, 1)]);
     }
+
+    #[test]
+    fn test_write_index() {
+        let mut array: HeapArray<usize, 5> = HeapArray::default();
+
+        array[3] = 5;
+
+        assert_eq!(0, array[2]);
+        assert_eq!(5, array[3]);
+    }
+    
+    #[test]
+    fn test_write_index_2d() {
+        let mut array: HeapArray2D<usize, 2, 5> = HeapArray2D::default();
+
+        array[3] = [1, 2];
+
+        assert_eq!(0, array[0][0]);
+        assert_eq!(1, array[3][0]);
+        assert_eq!(2, array[3][1]);
+    }
+    
+    #[test]
+    fn test_write_index_subarray_2d() {
+        let mut array: HeapArray2D<usize, 2, 5> = HeapArray2D::default();
+
+        array[3] = [1, 2];
+
+        assert_eq!([0, 0], array[0]);
+        assert_eq!([1, 2], array[3]);
+    }
+    
+    #[test]
+    fn test_write_index_3d() {
+        let mut array: HeapArray3D<usize, 3, 2, 5> = HeapArray3D::default();
+
+        array[3] = [[1, 2, 3], [4, 5, 6]];
+
+        assert_eq!(0, array[0][0][0]);
+        assert_eq!(1, array[3][0][0]);
+        assert_eq!(6, array[3][1][2]);
+    }
+    
+    #[test]
+    fn test_write_index_subarray_3d() {
+        let mut array: HeapArray3D<usize, 3, 2, 5> = HeapArray3D::default();
+
+        array[3] = [[1, 2, 3], [4, 5, 6]];
+
+        assert_eq!([[0, 0, 0], [0, 0, 0]], array[0]);
+        assert_eq!([1, 2, 3], array[3][0]);
+        assert_eq!([4, 5, 6], array[3][1]);
+    }
+    
+    #[test]
+    #[should_panic]
+    fn test_read_out_of_bounds() {
+        let array: HeapArray<usize, 5> = HeapArray::default();
+
+        assert_ne!(0, array[5]);
+    }
+    
+    #[test]
+    #[should_panic]
+    fn test_read_out_of_bounds_2d() {
+        let array: HeapArray2D<usize, 6, 5> = HeapArray2D::default();
+
+        assert_ne!(0, array[5][0]);
+    }
+   
+    #[test]
+    #[should_panic]
+    fn test_read_out_of_bounds_subarray_2d() {
+        let array: HeapArray2D<usize, 6, 5> = HeapArray2D::default();
+
+        assert_ne!([0, 0, 0, 0, 0, 0], array[5]);
+    }
+    
+    #[test]
+    #[should_panic]
+    fn test_read_out_of_bounds_3d() {
+        let array: HeapArray3D<usize, 7, 6, 5> = HeapArray3D::default();
+
+        assert_ne!(0, array[5][0][0]);
+    }
+   
+    #[test]
+    #[should_panic]
+    fn test_read_out_of_bounds_subarray_3d() {
+        let array: HeapArray3D<usize, 2, 6, 5> = HeapArray3D::default();
+
+        assert_ne!([[0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]], array[5]);
+    }
 }
 
