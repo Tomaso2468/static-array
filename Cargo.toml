@@ -1,12 +1,12 @@
 [package]
 name = "static-array"
-version = "0.1.0"
+version = "0.2.0"
 authors = [
     "Tomas O'Shea <48136416+Tomaso2468@users.noreply.github.com>"
 ]
 edition = "2021"
 resolver = "2"
-description = "A rust crate providing a heap-allocated non-resizable type-checked array."
+description = "A no-std rust crate providing a heap-allocated non-resizable type-checked array."
 homepage = "https://github.com/Tomaso2468/static-array"
 repository = "https://github.com/Tomaso2468/static-array"
 keywords = ["array", "static", "heap", "allocation"]
