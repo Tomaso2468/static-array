@@ -21,7 +21,12 @@
 //! assert_eq!(0, array[1247562]);
 //! ```
 
-use std::{ptr::{NonNull, self}, alloc::{Layout, alloc, handle_alloc_error}, mem::MaybeUninit, ops::{Index, IndexMut, Deref}, borrow::{Borrow, BorrowMut}};
+#![no_std]
+
+extern crate alloc;
+
+use core::{ptr::{NonNull, self}, alloc::Layout, mem::MaybeUninit, ops::{Index, IndexMut, Deref}, borrow::{Borrow, BorrowMut}};
+use alloc::{boxed::Box, alloc::{alloc, handle_alloc_error}};
 
 /// A heap allocated contiguous one dimensional array.
 /// This is equivalent in layout to the type `[T; N]`.
