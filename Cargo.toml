@@ -26,6 +26,5 @@ license = "BSD-3-Clause"
 rayon = { version = "1.8.1" }
 
 [features]
-std = []
-rayon = ["std"]
+rayon = []
 

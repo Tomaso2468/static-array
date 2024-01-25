@@ -31,10 +31,7 @@
 
 extern crate alloc;
 
-//#[cfg(feature = "std")]
-extern crate std;
-
-//#[cfg(feature = "rayon")]
+#[cfg(feature = "rayon")]
 use rayon::prelude::*;
 
 use core::{ptr::{NonNull, self}, alloc::Layout, mem::MaybeUninit, ops::{Index, IndexMut, Deref}, borrow::{Borrow, BorrowMut}};
@@ -107,7 +104,7 @@ impl <T, const N: usize> HeapArray<T, N> {
     /// Creates a new `HeapArray` by calling a function at each index in parallel.
     ///
     /// - `f` - The function to call.
-    //#[cfg(feature = "rayon")]
+    #[cfg(feature = "rayon")]
     pub fn from_fn_par<F: Fn(usize) -> T + Send + Sync>(f: F) -> Self where T: Send + Sync {
         unsafe {
             let mut array = HeapArray::alloc_array();
@@ -356,7 +353,7 @@ impl <T, const M: usize, const N: usize> HeapArray2D<T, M, N> {
     /// Creates a new `HeapArray2D` by calling a function at each index in parallel.
     ///
     /// - `f` - The function to call.
-    //#[cfg(feature = "rayon")]
+    #[cfg(feature = "rayon")]
     pub fn from_fn_par<F: Fn(usize, usize) -> T + Send + Sync>(f: F) -> Self where T: Send + Sync {
         unsafe {
             let mut array = HeapArray2D::alloc_array();
@@ -617,7 +614,7 @@ impl <T, const L: usize, const M: usize, const N: usize> HeapArray3D<T, L, M, N>
     /// Creates a new `HeapArray3D` by calling a function at each index in parallel.
     ///
     /// - `f` - The function to call.
-    //#[cfg(feature = "rayon")]
+    #[cfg(feature = "rayon")]
     pub fn from_fn_par<F: Fn(usize, usize, usize) -> T + Send + Sync>(f: F) -> Self where T: Send + Sync {
         unsafe {
             let mut array = HeapArray3D::alloc_array();
@@ -816,20 +813,20 @@ impl <T, const L: usize, const M: usize, const N: usize> From<Box<[[[T; L]; M]; 
 #[cfg(test)]
 mod tests {
     use crate::{HeapArray, HeapArray2D, HeapArray3D};
-    
+
     #[test]
-    //#[cfg(feature = "rayon")]
-    fn test_from_fn_par() {
-        let array: HeapArray<usize, 100> = HeapArray::from_fn_par(|i| i * 10);
+    fn test_from_fn() {
+        let array: HeapArray<usize, 3> = HeapArray::from_fn(|i| i * 10);
 
         assert_eq!(0, array[0]);
         assert_eq!(10, array[1]);
         assert_eq!(20, array[2]);
     }
-
+    
     #[test]
-    fn test_from_fn() {
-        let array: HeapArray<usize, 3> = HeapArray::from_fn(|i| i * 10);
+    #[cfg(feature = "rayon")]
+    fn test_from_fn_par() {
+        let array: HeapArray<usize, 100> = HeapArray::from_fn_par(|i| i * 10);
 
         assert_eq!(0, array[0]);
         assert_eq!(10, array[1]);
@@ -852,6 +849,7 @@ mod tests {
     }
     
     #[test]
+    #[cfg(feature = "rayon")]
     fn test_from_fn_par_2d() {
         let array: HeapArray2D<usize, 300, 300> = HeapArray2D::from_fn_par(|i, j| i * 10 + j);
 
@@ -892,6 +890,7 @@ mod tests {
     }
     
     #[test]
+    #[cfg(feature = "rayon")]
     fn test_from_fn_par_3d() {
         let array: HeapArray3D<usize, 200, 300, 300> = HeapArray3D::from_fn_par(|i, j, k| i * 10 + j + k * 100);
 
