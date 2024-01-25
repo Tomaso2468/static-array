@@ -31,32 +31,14 @@
 
 extern crate alloc;
 
-#[cfg(feature = "std")]
+//#[cfg(feature = "std")]
 extern crate std;
 
-#[cfg(feature = "rayon")]
+//#[cfg(feature = "rayon")]
 use rayon::prelude::*;
 
 use core::{ptr::{NonNull, self}, alloc::Layout, mem::MaybeUninit, ops::{Index, IndexMut, Deref}, borrow::{Borrow, BorrowMut}};
 use alloc::{boxed::Box, alloc::{alloc, handle_alloc_error}};
-
-#[cfg(feature = "rayon")]
-use core::cell::UnsafeCell;
-
-/// A cell holding a reference to shared array.
-/// 
-/// This type is used to share an array across threads. This is safe to use provided that the array
-/// accesses do not overlap.
-#[cfg(feature = "rayon")]
-struct SharedArrayCell<T, const N: usize>(UnsafeCell<NonNull<[T; N]>>);
-
-#[cfg(feature = "rayon")]
-unsafe impl <T, const N: usize> Sync for SharedArrayCell<T, N> {
-}
-
-#[cfg(feature = "rayon")]
-unsafe impl <T, const N: usize> Send for SharedArrayCell<T, N> {
-}
 
 /// A heap allocated contiguous one dimensional array.
 /// This is equivalent in layout to the type `[T; N]`.
@@ -125,21 +107,17 @@ impl <T, const N: usize> HeapArray<T, N> {
     /// Creates a new `HeapArray` by calling a function at each index in parallel.
     ///
     /// - `f` - The function to call.
-    #[cfg(feature = "rayon")]
+    //#[cfg(feature = "rayon")]
     pub fn from_fn_par<F: Fn(usize) -> T + Send + Sync>(f: F) -> Self where T: Send + Sync {
         unsafe {
-            let array = SharedArrayCell(UnsafeCell::new(HeapArray::alloc_array()));
-
-            (0..N).into_par_iter().for_each(|i| {
-                let array = &array;
-
-                let first_element = (*array.0.get()).as_ptr() as *mut T;
-
-                ptr::write(first_element.offset(i as isize), f(i));
+            let mut array = HeapArray::alloc_array();
+            
+            array.as_mut().into_par_iter().enumerate().for_each(|(i, value)| {
+                ptr::write_volatile(value, f(i))
             });
 
             Self {
-                data: Box::from_raw(array.0.into_inner().as_ptr())
+                data: Box::from_raw(array.as_ptr())
             }
         }
     }
@@ -368,6 +346,28 @@ impl <T, const M: usize, const N: usize> HeapArray2D<T, M, N> {
                     ptr::write(first_element.offset(index), f(i, j));
                 }
             }
+
+            Self {
+                data: Box::from_raw(array.as_ptr())
+            }
+        }
+    }
+    
+    /// Creates a new `HeapArray2D` by calling a function at each index in parallel.
+    ///
+    /// - `f` - The function to call.
+    //#[cfg(feature = "rayon")]
+    pub fn from_fn_par<F: Fn(usize, usize) -> T + Send + Sync>(f: F) -> Self where T: Send + Sync {
+        unsafe {
+            let mut array = HeapArray2D::alloc_array();
+            
+            array.as_mut().into_par_iter().enumerate().for_each(|(i, value)| {
+                let pointer = value as *mut T;
+
+                for j in 0..M {
+                    ptr::write_volatile(pointer.offset(j as isize), f(i, j));
+                }
+            });
 
             Self {
                 data: Box::from_raw(array.as_ptr())
@@ -613,6 +613,32 @@ impl <T, const L: usize, const M: usize, const N: usize> HeapArray3D<T, L, M, N>
             }
         }
     }
+    
+    /// Creates a new `HeapArray3D` by calling a function at each index in parallel.
+    ///
+    /// - `f` - The function to call.
+    //#[cfg(feature = "rayon")]
+    pub fn from_fn_par<F: Fn(usize, usize, usize) -> T + Send + Sync>(f: F) -> Self where T: Send + Sync {
+        unsafe {
+            let mut array = HeapArray3D::alloc_array();
+            
+            array.as_mut().into_par_iter().enumerate().for_each(|(i, value)| {
+                let pointer = value as *mut [T; L] as *mut T;
+
+                for j in 0..M {
+                    for k in 0..L {
+                        let index = (j * L + k) as isize;
+
+                        ptr::write_volatile(pointer.offset(index), f(i, j, k));
+                    }
+                }
+            });
+
+            Self {
+                data: Box::from_raw(array.as_ptr())
+            }
+        }
+    }
 
     /// Creates a new `HeapArray2D` from a raw pointer.
     ///
@@ -790,6 +816,16 @@ impl <T, const L: usize, const M: usize, const N: usize> From<Box<[[[T; L]; M]; 
 #[cfg(test)]
 mod tests {
     use crate::{HeapArray, HeapArray2D, HeapArray3D};
+    
+    #[test]
+    //#[cfg(feature = "rayon")]
+    fn test_from_fn_par() {
+        let array: HeapArray<usize, 100> = HeapArray::from_fn_par(|i| i * 10);
+
+        assert_eq!(0, array[0]);
+        assert_eq!(10, array[1]);
+        assert_eq!(20, array[2]);
+    }
 
     #[test]
     fn test_from_fn() {
@@ -814,10 +850,50 @@ mod tests {
         assert_eq!(21, array[2][1]);
         assert_eq!(22, array[2][2]);
     }
+    
+    #[test]
+    fn test_from_fn_par_2d() {
+        let array: HeapArray2D<usize, 300, 300> = HeapArray2D::from_fn_par(|i, j| i * 10 + j);
+
+        assert_eq!(0, array[0][0]);
+        assert_eq!(1, array[0][1]);
+        assert_eq!(2, array[0][2]);
+        assert_eq!(10, array[1][0]);
+        assert_eq!(11, array[1][1]);
+        assert_eq!(12, array[1][2]);
+        assert_eq!(20, array[2][0]);
+        assert_eq!(21, array[2][1]);
+        assert_eq!(22, array[2][2]);
+    }
 
     #[test]
     fn test_from_fn_3d() {
         let array: HeapArray3D<usize, 2, 3, 3> = HeapArray3D::from_fn(|i, j, k| i * 10 + j + k * 100);
+
+        assert_eq!(0, array[0][0][0]);
+        assert_eq!(1, array[0][1][0]);
+        assert_eq!(2, array[0][2][0]);
+        assert_eq!(10, array[1][0][0]);
+        assert_eq!(11, array[1][1][0]);
+        assert_eq!(12, array[1][2][0]);
+        assert_eq!(20, array[2][0][0]);
+        assert_eq!(21, array[2][1][0]);
+        assert_eq!(22, array[2][2][0]);
+        
+        assert_eq!(100, array[0][0][1]);
+        assert_eq!(101, array[0][1][1]);
+        assert_eq!(102, array[0][2][1]);
+        assert_eq!(110, array[1][0][1]);
+        assert_eq!(111, array[1][1][1]);
+        assert_eq!(112, array[1][2][1]);
+        assert_eq!(120, array[2][0][1]);
+        assert_eq!(121, array[2][1][1]);
+        assert_eq!(122, array[2][2][1]);
+    }
+    
+    #[test]
+    fn test_from_fn_par_3d() {
+        let array: HeapArray3D<usize, 200, 300, 300> = HeapArray3D::from_fn_par(|i, j, k| i * 10 + j + k * 100);
 
         assert_eq!(0, array[0][0][0]);
         assert_eq!(1, array[0][1][0]);
