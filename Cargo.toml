@@ -1,6 +1,6 @@
 [package]
 name = "static-array"
-version = "0.3.0"
+version = "0.4.0"
 authors = [
     "Tomas O'Shea <48136416+Tomaso2468@users.noreply.github.com>"
 ]
