@@ -34,7 +34,7 @@ extern crate alloc;
 #[cfg(feature = "rayon")]
 use rayon::prelude::*;
 
-use core::{ptr::{NonNull, self}, alloc::Layout, mem::MaybeUninit, ops::{Index, IndexMut, Deref}, borrow::{Borrow, BorrowMut}};
+use core::{ptr::{NonNull, self}, alloc::Layout, mem::MaybeUninit, ops::{Index, IndexMut, Deref, DerefMut}, borrow::{Borrow, BorrowMut}};
 use alloc::{boxed::Box, alloc::{alloc, handle_alloc_error}};
 
 /// A heap allocated contiguous one dimensional array.
@@ -203,6 +203,12 @@ impl <T, const N: usize> Deref for HeapArray<T, N> {
 
     fn deref(&self) -> &Self::Target {
         self.as_slice()
+    }
+}
+
+impl <T, const N: usize> DerefMut for HeapArray<T, N> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        self.as_mut_slice()
     }
 }
 
@@ -461,6 +467,12 @@ impl <T, const M: usize, const N: usize> Deref for HeapArray2D<T, M, N> {
 
     fn deref(&self) -> &Self::Target {
         self.as_slice()
+    }
+}
+
+impl <T, const M: usize, const N: usize> DerefMut for HeapArray2D<T, M, N> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        self.as_mut_slice()
     }
 }
 
@@ -731,6 +743,12 @@ impl <T, const L: usize, const M: usize, const N: usize> Deref for HeapArray3D<T
 
     fn deref(&self) -> &Self::Target {
         self.as_slice()
+    }
+}
+
+impl <T, const L: usize, const M: usize, const N: usize> DerefMut for HeapArray3D<T, L, M, N> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        self.as_mut_slice()
     }
 }
 
