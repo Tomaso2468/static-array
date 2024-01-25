@@ -1,3 +1,15 @@
+<a name="v0.4.0"></a>
+# [Static Array Version 0.4.0 (v0.4.0)](https://github.com/Tomaso2468/static-array/releases/tag/v0.4.0) - 25 Jan 2024
+
+# Added
+- Add a new feature flag `rayon` that enables support for creating arrays in parallel. This uses the `rayon` crate.
+- Add `from_fn_par` methods that create an array in parallel using `rayon`.
+
+**Full Changelog**: https://github.com/Tomaso2468/static-array/compare/v0.3.0...v0.4.0
+
+[Changes][v0.4.0]
+
+
 <a name="v0.3.0"></a>
 # [Static Array Version 0.3.0 (v0.3.0)](https://github.com/Tomaso2468/static-array/releases/tag/v0.3.0) - 15 Jan 2024
 
@@ -28,6 +40,7 @@ The initial release of the static array crate.
 [Changes][v0.1.0]
 
 
+[v0.4.0]: https://github.com/Tomaso2468/static-array/compare/v0.3.0...v0.4.0
 [v0.3.0]: https://github.com/Tomaso2468/static-array/compare/v0.2.0...v0.3.0
 [v0.2.0]: https://github.com/Tomaso2468/static-array/compare/v0.1.0...v0.2.0
 [v0.1.0]: https://github.com/Tomaso2468/static-array/tree/v0.1.0
