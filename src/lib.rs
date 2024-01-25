@@ -31,8 +31,32 @@
 
 extern crate alloc;
 
+#[cfg(feature = "std")]
+extern crate std;
+
+#[cfg(feature = "rayon")]
+use rayon::prelude::*;
+
 use core::{ptr::{NonNull, self}, alloc::Layout, mem::MaybeUninit, ops::{Index, IndexMut, Deref}, borrow::{Borrow, BorrowMut}};
 use alloc::{boxed::Box, alloc::{alloc, handle_alloc_error}};
+
+#[cfg(feature = "rayon")]
+use core::cell::UnsafeCell;
+
+/// A cell holding a reference to shared array.
+/// 
+/// This type is used to share an array across threads. This is safe to use provided that the array
+/// accesses do not overlap.
+#[cfg(feature = "rayon")]
+struct SharedArrayCell<T, const N: usize>(UnsafeCell<NonNull<[T; N]>>);
+
+#[cfg(feature = "rayon")]
+unsafe impl <T, const N: usize> Sync for SharedArrayCell<T, N> {
+}
+
+#[cfg(feature = "rayon")]
+unsafe impl <T, const N: usize> Send for SharedArrayCell<T, N> {
+}
 
 /// A heap allocated contiguous one dimensional array.
 /// This is equivalent in layout to the type `[T; N]`.
@@ -94,6 +118,28 @@ impl <T, const N: usize> HeapArray<T, N> {
 
             Self {
                 data: Box::from_raw(array.as_ptr())
+            }
+        }
+    }
+    
+    /// Creates a new `HeapArray` by calling a function at each index in parallel.
+    ///
+    /// - `f` - The function to call.
+    #[cfg(feature = "rayon")]
+    pub fn from_fn_par<F: Fn(usize) -> T + Send + Sync>(f: F) -> Self where T: Send + Sync {
+        unsafe {
+            let array = SharedArrayCell(UnsafeCell::new(HeapArray::alloc_array()));
+
+            (0..N).into_par_iter().for_each(|i| {
+                let array = &array;
+
+                let first_element = (*array.0.get()).as_ptr() as *mut T;
+
+                ptr::write(first_element.offset(i as isize), f(i));
+            });
+
+            Self {
+                data: Box::from_raw(array.0.into_inner().as_ptr())
             }
         }
     }
